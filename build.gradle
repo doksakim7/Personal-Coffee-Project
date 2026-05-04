@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.14'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'kr.spartaclub'
+version = '0.0.1-SNAPSHOT'
+description = 'Coffee-Project'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ✅ Spring 기본
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // ✅ DB
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // ✅ Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // ✅ Redis (분산락 + 캐싱)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
+
+    // ✅ Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // ✅ JSON (LocalDateTime)
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // ✅ Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // ✅ QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    // ✅ Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ✅ Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // (선택) QueryDSL 테스트에서도 사용 시
+    testAnnotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+// ✅ QueryDSL 설정
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.generatedSourceOutputDirectory = file(querydslDir)
+
+    // IntelliJ 인식 문제 방지
+    options.compilerArgs += [
+            "-Aquerydsl.generatedAnnotationClass=jakarta.annotation.Generated"
+    ]
+}
+
+clean {
+    delete file(querydslDir)
+}

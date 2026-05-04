@@ -1,3 +1,48 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로그
+logs/
 # Compiled class file
 *.class
 
@@ -6,9 +51,15 @@
 
 # BlueJ files
 *.ctxt
+# 환경 변수 파일
+.env
+.env.*
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+# IDE temp
+*.swp
+*.swo
 
 # Package Files #
 *.jar
@@ -22,3 +73,11 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+# QueryDSL
+/build/generated/
+
+# application 설정 파일
+*.yml
+*.yaml
+!application-example.yml
+!src/main/resources/application-example.yml
