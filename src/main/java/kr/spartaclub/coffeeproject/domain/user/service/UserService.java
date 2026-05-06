@@ -29,6 +29,7 @@ public class UserService {
         return new UserResponse(user.getId(), user.getEmail());
     }
 
+    // Partial Update 방식이며, 현재는 비밀번호 변경만 지원한다.
     @Transactional
     public void updateMyInfo(AuthUser authUser, UserUpdateRequest request) {
         User user = userRepository.findById(authUser.getId())

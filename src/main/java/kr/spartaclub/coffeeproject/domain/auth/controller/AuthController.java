@@ -34,8 +34,7 @@ public class AuthController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> signin(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("로그인에 성공했습니다.", authService.login(request)));
+        return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", authService.login(request)));
     }
 
 }

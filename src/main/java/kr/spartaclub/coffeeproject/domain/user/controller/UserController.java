@@ -7,7 +7,6 @@ import kr.spartaclub.coffeeproject.domain.user.dto.request.UserUpdateRequest;
 import kr.spartaclub.coffeeproject.domain.user.dto.response.UserResponse;
 import kr.spartaclub.coffeeproject.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +24,7 @@ public class UserController {
             @AuthenticationPrincipal AuthUser authUser
     ) {
         UserResponse response = userService.getMyInfo(authUser);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("회원 정보 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.success("회원 정보 조회 성공", response));
     }
 
     // 내 정보 수정
@@ -36,8 +34,7 @@ public class UserController {
             @Valid @RequestBody UserUpdateRequest request
     ) {
         userService.updateMyInfo(authUser, request);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("회원 정보가 수정되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("회원 정보가 수정되었습니다.", null));
     }
 
 }
