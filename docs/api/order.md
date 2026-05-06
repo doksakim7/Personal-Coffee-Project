@@ -4,7 +4,12 @@
 
 ※ 주문은 장바구니 기반으로 생성된다.
 
-※ 주문 생성 시 장바구니는 초기화된다.
+※ 주문 결제 성공 시 장바구니는 초기화된다.
+
+※ 주문 상태에 따른 처리
+- `PENDING` → 결제 진행 가능
+- `ORDERED` → 동일 결과 반환 (멱등성)
+- `CANCELED_BY_USER`, `CANCELED_BY_SYSTEM` → 결제 불가 (`409 Conflict`)
 
 ---
 
@@ -14,10 +19,12 @@
 | ------ | ------------ |
 | Method | POST         |
 | URL    | `/orders`    |
-| 설명     | 장바구니 기반 주문 생성 |
+| 설명     | 장바구니 기반 주문 생성 (결제 전 상태) |
 | 인증 | 필요 |
 
 ※ 주문 생성 시 장바구니 데이터를 기반으로 주문이 생성된다.
+
+※ 주문 생성 단계에서는 포인트 검증을 수행하지 않으며, 모든 주문은 `PENDING` 상태로 생성된다.
 
 ---
 
@@ -36,17 +43,69 @@ Idempotency-Key: {unique-key}
 ```
 ※ 동일한 `Idempotency-Key`로 요청 시, 동일한 결과를 반환한다.
 
-※ 중복 요청으로 인한 결제 중복을 방지한다.
+※ 중복 요청으로 인한 주문 중복 생성을 방지한다.
 
 ---
 
 ### Response `201 Created`
 ```json
 {
-    "message": "주문이 완료되었습니다.",
+    "message": "주문이 생성되었습니다.",
     "data": {
         "orderId": 1,
         "totalPrice": 8000,
+        "status": "PENDING"
+    },
+    "timestamp": "2026-05-11T00:00:00+09:00"
+}
+```
+
+---
+
+### Response `400 Bad Request`
+```json
+{
+    "message": "Idempotency-Key가 필요합니다.",
+    "data": null,
+    "timestamp": "2026-05-11T00:00:00+09:00"
+}
+```
+
+---
+
+## 2. 주문 결제
+
+| 항목     | 내용                      |
+| ------ | ----------------------- |
+| Method | POST                    |
+| URL    | `/orders/{orderId}/pay` |
+| 설명     | 주문 결제 (포인트 차감 + 상태 변경)  |
+| 인증     | 필요                      |
+
+※ `PENDING` 상태에서만 결제 가능
+
+※ 결제 시 포인트가 차감
+
+※ 성공 시 `ORDERED`, 포인트 부족 등 비즈니스 실패 시 `CANCELED_BY_SYSTEM` 상태 변경
+
+※ 락 실패, 시스템 오류 시 상태 변경 없음 (`PENDING` 유지)
+
+※ Redis 분산락 적용
+
+※ `ORDERED` 상태에서 재요청 시 동일 결과를 반환한다 (멱등성 보장)
+
+※ 이미 결제 완료된 주문에 대해서는 실제 결제 로직을 수행하지 않고 기존 결과를 반환한다.
+
+※ `CANCELED_BY_USER`, `CANCELED_BY_SYSTEM` 상태에서는 결제 요청이 불가능하다
+
+---
+
+### Response `200 OK`
+```json
+{
+    "message": "결제가 완료되었습니다.",
+    "data": {
+        "orderId": 1,
         "status": "ORDERED"
     },
     "timestamp": "2026-05-11T00:00:00+09:00"
@@ -63,6 +122,32 @@ Idempotency-Key: {unique-key}
     "timestamp": "2026-05-11T00:00:00+09:00"
 }
 ```
+※ 포인트가 부족한 경우
+
+---
+
+### Response `409 Conflict`
+```json
+{
+    "message": "이미 처리된 주문입니다.",
+    "data": null,
+    "timestamp": "2026-05-11T00:00:00+09:00"
+}
+```
+※ `ORDERED` 상태인 경우 → 이미 결제 완료된 주문
+
+---
+
+### Response `409 Conflict`
+```json
+{
+    "message": "이미 취소된 주문입니다.",
+    "data": null,
+    "timestamp": "2026-05-11T00:00:00+09:00"
+}
+```
+
+※ `CANCELED_BY_USER`, `CANCELED_BY_SYSTEM` 상태인 경우 → 이미 취소된 주문
 
 ---
 
@@ -78,7 +163,7 @@ Idempotency-Key: {unique-key}
 
 ---
 
-## 2. 주문 목록 조회
+## 3. 주문 목록 조회
 
 | 항목     | 내용       |
 | ------ | -------- |
@@ -123,7 +208,7 @@ Idempotency-Key: {unique-key}
 
 ---
 
-## 3. 주문 상세 조회
+## 4. 주문 상세 조회
 
 | 항목     | 내용                 |
 | ------ | ------------------ |
@@ -178,7 +263,7 @@ Idempotency-Key: {unique-key}
 
 ---
 
-## 4. 주문 취소
+## 5. 주문 취소
 
 | 항목     | 내용                        |
 | ------ | ------------------------- |
@@ -187,11 +272,11 @@ Idempotency-Key: {unique-key}
 | 설명     | 주문 취소 및 포인트 복구            |
 | 인증 | 필요 |
 
-※ 주문 상태가 `ORDERED`인 경우에만 취소 가능
+※ 주문 상태가 `PENDING`, `ORDERED` 모두 취소 가능
 
-※ 취소 시 포인트를 복구하고 `POINT_HISTORY`에 `REFUND` 기록
+※ `ORDERED` 상태에서 취소 시 포인트를 복구하고 `POINT_HISTORY`에 `REFUND` 기록
 
-※ 취소된 주문은 `CANCELED` 상태로 변경된다
+※ 취소된 주문은 `CANCELED_BY_USER` 상태로 변경
 
 ---
 
@@ -201,13 +286,15 @@ Idempotency-Key: {unique-key}
     "message": "주문이 취소되었습니다.",
     "data": {
         "orderId": 1,
-        "status": "CANCELED"
+        "status": "CANCELED_BY_USER"
     },
     "timestamp": "2026-05-11T00:00:00+09:00"
 }
 ```
 
-### Response 409 Conflict
+---
+
+### Response `409 Conflict`
 ```json
 {
     "message": "이미 취소된 주문입니다.",
@@ -215,3 +302,4 @@ Idempotency-Key: {unique-key}
     "timestamp": "2026-05-11T00:00:00+09:00"
 }
 ```
+※ `CANCELED_BY_USER`, `CANCELED_BY_SYSTEM` 상태인 경우 → 이미 취소된 주문

@@ -100,7 +100,8 @@
     "data": {
         "accessToken": "jwt-token",
         "tokenType": "Bearer",
-        "userId": 1
+        "userId": 1,
+        "email": "test@test.com"
     },
     "timestamp": "2026-05-11T00:00:00+09:00"
 }

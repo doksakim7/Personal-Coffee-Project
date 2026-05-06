@@ -1,6 +1,7 @@
 # 🛒 장바구니 API
 
 ※ 모든 API는 Base URL(`/api`) 하위에서 동작한다.
+
 ※ 장바구니는 사용자별로 1개만 존재한다.
 
 ---
@@ -33,7 +34,8 @@
                 "name": "아메리카노",
                 "price": 4000,
                 "quantity": 2,
-                "totalPrice": 8000
+                "totalPrice": 8000,
+                "status": "AVAILABLE"
             }
         ],
         "totalPrice": 8000
@@ -55,7 +57,7 @@
 
 ※ 동일한 `menuId`가 이미 존재할 경우, 새로운 item을 생성하지 않고 기존 item의 수량을 증가시킨다.
 
-※ 메뉴 상태가 `ACTIVE`인 경우에만 장바구니에 추가할 수 있다.
+※ 메뉴 상태가 `AVAILABLE`인 경우에만 장바구니에 추가할 수 있다.
 
 ---
 

@@ -36,6 +36,7 @@ public enum ErrorCode {
     // 주문
     CART_EMPTY(HttpStatus.BAD_REQUEST, "장바구니가 비어있습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    ORDER_ALREADY_ORDERED(HttpStatus.CONFLICT, "이미 처리된 주문입니다."),
     ORDER_ALREADY_CANCELED(HttpStatus.CONFLICT, "이미 취소된 주문입니다."),
     IDEMPOTENCY_KEY_MISSING(HttpStatus.BAD_REQUEST, "Idempotency-Key가 필요합니다."),
     IDEMPOTENCY_KEY_CONFLICT(HttpStatus.CONFLICT, "이미 처리된 요청입니다."),
