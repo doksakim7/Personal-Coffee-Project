@@ -2,7 +2,7 @@
 
 본 ERD는 주문 흐름(`CART` → `ORDER` → `ORDER_ITEM`)과 포인트 이력 관리를 중심으로 설계하였다.
 
-<img width="1118" height="768" alt="커피 프로젝트 ERD" src="https://github.com/user-attachments/assets/514a5736-7db0-43ac-88e1-f5a955d23f7b" />
+![커피 프로젝트 ERD.png](../image/%E1%84%8F%E1%85%A5%E1%84%91%E1%85%B5%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8C%E1%85%A6%E1%86%A8%E1%84%90%E1%85%B3%20ERD.png)
 
 ## 데이터 설계 정책
 - `total_price`는 `ORDER_ITEM`의 (`price × quantity`)의 합으로 계산한다.

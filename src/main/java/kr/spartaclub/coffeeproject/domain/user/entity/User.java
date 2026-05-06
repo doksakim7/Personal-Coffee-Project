@@ -35,6 +35,7 @@ public class User extends SoftDeleteEntity {
     // ==========================
     // 생성자
     // ==========================
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
