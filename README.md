@@ -189,3 +189,8 @@ k6를 활용하여 동시 요청 환경에서 시스템의 안정성을 검증�
 👉 [api](docs/api)
 
 ---
+
+# ⚖️ License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
