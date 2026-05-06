@@ -16,7 +16,7 @@ public abstract class SoftDeleteEntity extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public void delete() {
+    public void softDelete() {
         if (this.deletedAt != null) {
             return;
         }
