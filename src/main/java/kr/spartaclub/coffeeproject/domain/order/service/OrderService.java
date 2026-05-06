@@ -128,6 +128,7 @@ public class OrderService {
                         user,
                         order,
                         -order.getTotalPrice(),
+                        user.getPoint(),
                         PointType.USE
                 )
         );
@@ -202,6 +203,7 @@ public class OrderService {
                             user,
                             order,
                             order.getTotalPrice(),
+                            user.getPoint(),
                             PointType.REFUND
                     )
             );

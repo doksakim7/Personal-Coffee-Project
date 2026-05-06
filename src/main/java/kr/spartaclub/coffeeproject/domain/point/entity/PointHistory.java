@@ -33,6 +33,10 @@ public class PointHistory extends BaseEntity {
     @Column(nullable = false)
     private Long amount;
 
+    // 처리 후 잔액
+    @Column(nullable = false)
+    private Long balance;
+
     // 포인트 이력 타입
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -42,10 +46,11 @@ public class PointHistory extends BaseEntity {
     // 생성자
     // ==========================
 
-    public PointHistory(User user, Order order, Long amount, PointType type) {
+    public PointHistory(User user, Order order, Long amount, Long balance, PointType type) {
         this.user = user;
         this.order = order;
         this.amount = amount;
+        this.balance = balance;
         this.type = type;
     }
 
