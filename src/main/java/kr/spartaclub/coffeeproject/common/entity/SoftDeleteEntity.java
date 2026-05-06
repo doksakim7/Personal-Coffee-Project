@@ -26,4 +26,5 @@ public abstract class SoftDeleteEntity extends BaseEntity {
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
+
 }

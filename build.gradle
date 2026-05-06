@@ -30,6 +30,11 @@ dependencies {
     // ✅ Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // ✅ Jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'        // JWT API
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'          // JWT 구현체 (런타임)
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'       // JWT JSON 파싱 (런타임)
+
     // ✅ Redis (분산락 + 캐싱)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
