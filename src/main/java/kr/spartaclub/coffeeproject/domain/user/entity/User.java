@@ -49,7 +49,7 @@ public class User extends SoftDeleteEntity {
     // 포인트 증가
     public void addPoint(Long amount) {
         if (amount == null || amount <= 0) {
-            throw new CustomException(ErrorCode.POINT_INVALID_CHARGE_AMOUNT);
+            throw new CustomException(ErrorCode.POINT_INVALID_ADD_AMOUNT);
         }
         this.point += amount;
     }
@@ -57,7 +57,7 @@ public class User extends SoftDeleteEntity {
     // 포인트 차감
     public void subtractPoint(Long amount) {
         if (amount == null || amount <= 0) {
-            throw new CustomException(ErrorCode.POINT_INVALID_USE_AMOUNT);
+            throw new CustomException(ErrorCode.POINT_INVALID_SUBTRACT_AMOUNT);
         }
         if (this.point < amount) {
             throw new CustomException(ErrorCode.INSUFFICIENT_POINT);

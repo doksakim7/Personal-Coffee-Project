@@ -39,8 +39,8 @@
     "message": "성공 메시지",
     "data": {
         "exampleKey": "exampleValue"
-    },
-    "timestamp": "2026-05-11T09:00.000000"
+    }, 
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```
 
@@ -52,7 +52,7 @@
 {
     "message": "에러 메시지",
     "data": null,
-    "timestamp": "2026-05-11T09:00.000000"
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```
 

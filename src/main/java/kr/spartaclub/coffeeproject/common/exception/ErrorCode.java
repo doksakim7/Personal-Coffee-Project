@@ -43,10 +43,12 @@ public enum ErrorCode {
 
     // 포인트
     INSUFFICIENT_POINT(HttpStatus.CONFLICT, "포인트가 부족합니다."),
-    POINT_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "최대 보유 포인트를 초과했습니다."),
+    POINT_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "최대 보유 포인트를 초과할 수 없습니다."),
     POINT_INVALID_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 금액이 올바르지 않습니다."),
-    POINT_INVALID_CHARGE_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 증가값은 0보다 커야 합니다."),
-    POINT_INVALID_USE_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 차감값은 0보다 커야 합니다."),
+    POINT_INVALID_CHARGE_POLICY(HttpStatus.BAD_REQUEST, "충전 금액은 10,000원 이상이며 5,000원 단위여야 합니다."),
+    POINT_INVALID_EXCHANGE_POLICY(HttpStatus.BAD_REQUEST, "환전 금액은 5,000원 이상이며 5,000원 단위여야 합니다."),
+    POINT_INVALID_ADD_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 증가값은 0보다 커야 합니다."),
+    POINT_INVALID_SUBTRACT_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 차감값은 0보다 커야 합니다."),
 
     // 동시성 제어
     LOCK_ACQUIRE_FAILED(HttpStatus.TOO_MANY_REQUESTS, "요청이 많아 처리할 수 없습니다. 잠시 후 다시 시도해주세요.");

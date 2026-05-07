@@ -75,7 +75,7 @@
         "totalElements": 100,
         "totalPages": 10
     }, 
-    "timestamp": "2026-05-11T09:00.000000"
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```
 
@@ -116,8 +116,8 @@
         "price": 4000,
         "status": "AVAILABLE",
         "type": "COFFEE"
-    }, 
-    "timestamp": "2026-05-11T09:00.000000"
+    },
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```
 
@@ -127,8 +127,8 @@
 ```json
 {
     "message": "존재하지 않는 메뉴입니다.",
-    "data": null,
-    "timestamp": "2026-05-11T09:00.000000"
+    "data": null, 
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```
 
@@ -170,7 +170,7 @@
             "type": "COFFEE",
             "orderCount": 120
         }
-    ],
-    "timestamp": "2026-05-11T09:00.000000"
+    ], 
+    "timestamp": "2026-05-11T09:00.00.000000"
 }
 ```

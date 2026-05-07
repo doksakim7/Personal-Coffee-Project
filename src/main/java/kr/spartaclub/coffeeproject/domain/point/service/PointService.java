@@ -5,7 +5,7 @@ import kr.spartaclub.coffeeproject.common.exception.CustomException;
 import kr.spartaclub.coffeeproject.common.exception.ErrorCode;
 import kr.spartaclub.coffeeproject.common.security.AuthUser;
 import kr.spartaclub.coffeeproject.domain.point.dto.request.PointAmountRequest;
-import kr.spartaclub.coffeeproject.domain.point.dto.response.PointHistoryResponse;
+import kr.spartaclub.coffeeproject.domain.point.dto.response.PointHistoryListResponse;
 import kr.spartaclub.coffeeproject.domain.point.dto.response.PointResponse;
 import kr.spartaclub.coffeeproject.domain.point.entity.PointHistory;
 import kr.spartaclub.coffeeproject.domain.point.repository.PointHistoryRepository;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -90,17 +92,28 @@ public class PointService {
 
     // 포인트 내역을 최신순으로 조회한다.
     @Transactional(readOnly = true)
-    public Page<PointHistoryResponse> getPointHistories(AuthUser authUser, Pageable pageable) {
+    public PointHistoryListResponse getPointHistories(AuthUser authUser, Pageable pageable) {
         User user = getUser(authUser);
 
-        return pointHistoryRepository.findAllByUserOrderByCreatedAtDesc(user, pageable)
-                .map(history -> new PointHistoryResponse(
+        Page<PointHistory> pageResult = pointHistoryRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
+
+        List<PointHistoryListResponse.PointHistoryItem> content = pageResult.getContent().stream()
+                .map(history -> new PointHistoryListResponse.PointHistoryItem(
                         history.getId(),
                         history.getType().name(),
                         history.getAmount(),
                         history.getBalance(),
                         history.getCreatedAt()
-                ));
+                ))
+                .toList();
+
+        return new PointHistoryListResponse(
+                content,
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.getTotalPages()
+        );
     }
 
     private User getUser(AuthUser authUser) {
@@ -110,13 +123,13 @@ public class PointService {
 
     private void validateChargeAmount(Long amount) {
         if (amount == null || amount < MIN_CHARGE_AMOUNT || amount % UNIT_AMOUNT != 0) {
-            throw new CustomException(ErrorCode.POINT_INVALID_AMOUNT);
+            throw new CustomException(ErrorCode.POINT_INVALID_CHARGE_POLICY);
         }
     }
 
     private void validateExchangeAmount(Long amount) {
         if (amount == null || amount < MIN_EXCHANGE_AMOUNT || amount % UNIT_AMOUNT != 0) {
-            throw new CustomException(ErrorCode.POINT_INVALID_AMOUNT);
+            throw new CustomException(ErrorCode.POINT_INVALID_EXCHANGE_POLICY);
         }
     }
 

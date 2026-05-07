@@ -3,7 +3,7 @@ package kr.spartaclub.coffeeproject.domain.point.controller;
 import kr.spartaclub.coffeeproject.common.response.ApiResponse;
 import kr.spartaclub.coffeeproject.common.security.AuthUser;
 import kr.spartaclub.coffeeproject.domain.point.dto.request.PointAmountRequest;
-import kr.spartaclub.coffeeproject.domain.point.dto.response.PointHistoryResponse;
+import kr.spartaclub.coffeeproject.domain.point.dto.response.PointHistoryListResponse;
 import kr.spartaclub.coffeeproject.domain.point.dto.response.PointResponse;
 import kr.spartaclub.coffeeproject.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
@@ -52,11 +52,11 @@ public class PointController {
 
     // 포인트 내역 조회
     @GetMapping("/histories")
-    public ResponseEntity<ApiResponse<Page<PointHistoryResponse>>> getPointHistories(
+    public ResponseEntity<ApiResponse<PointHistoryListResponse>> getPointHistories(
             @AuthenticationPrincipal AuthUser authUser,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<PointHistoryResponse> response = pointService.getPointHistories(authUser, pageable);
+        PointHistoryListResponse response = pointService.getPointHistories(authUser, pageable);
         return ResponseEntity.ok(ApiResponse.success("포인트 내역 조회 성공", response));
     }
 
