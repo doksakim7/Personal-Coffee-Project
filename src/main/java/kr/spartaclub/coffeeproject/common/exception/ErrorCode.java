@@ -25,7 +25,7 @@ public enum ErrorCode {
     USER_INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
 
     // 메뉴
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 메뉴입니다."),
     MENU_NOT_ACTIVE(HttpStatus.CONFLICT, "현재 판매 중인 메뉴가 아닙니다."),
 
     // 장바구니

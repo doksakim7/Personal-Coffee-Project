@@ -181,6 +181,8 @@
 | page | int | 선택 | 페이지 번호 |
 | size | int | 선택 | 페이지 크기 |
 
+※ page는 Spring Pageable 기본 규칙에 따라 0부터 시작한다.
+
 ---
 ### type 정의
 | 값        | 설명      |
