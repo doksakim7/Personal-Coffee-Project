@@ -23,11 +23,16 @@ spring:
         show_sql: true
         format_sql: true
 
-  #  Redis 설정
   data:
+    # Redis 설정
     redis:
       host: localhost
       port: 6379
+
+    # 페이징 설정
+    web:
+      pageable:
+        max-page-size: 100
 
 # 서버 상태 모니터링 (/actuator/health)
 management:
