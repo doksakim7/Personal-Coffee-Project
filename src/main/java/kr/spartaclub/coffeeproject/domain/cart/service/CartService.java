@@ -125,7 +125,7 @@ public class CartService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    // 다른 사용자의 장바구니 아이템에 접근하지 못하도록 소유자를 검증한다.
+    // 다른 사용자의 장바구니 상품 존재 여부를 노출하지 않기 위해, 소유자가 아니면 동일하게 CART_ITEM_NOT_FOUND를 반환한다.
     private void validateCartOwner(CartItem cartItem, User user) {
         if (!cartItem.getCart().getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorCode.CART_ITEM_NOT_FOUND);
