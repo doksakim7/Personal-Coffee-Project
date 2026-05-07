@@ -14,8 +14,9 @@
     - `EXCHANGE`: - (환전)
 - 이미지는 외부 스토리지(S3 등)에 저장하고 URL만 관리한다.
 - 모든 조회는 Soft Delete 정책에 따라 `deleted_at IS NULL` 조건을 기본으로 한다.
-- `USER.point`는 현재 포인트 잔액의 기준 값이며, `POINT_HISTORY`는 포인트 변경 이력을 기록하는 로그로 사용된다.
+- `USER.point`는 현재 포인트 잔액의 기준 값이며, `POINT_HISTORY`는 포인트 변경 이력을 저장하는 로그 테이블로 사용된다.
 - 모든 포인트 변경은 두 테이블에 동시에 반영된다.
+- `POINT_HISTORY.balance`는 각 포인트 이력이 반영된 직후의 잔액을 저장한다.
 
 ## 주문 상태 흐름
 `PENDING` → `ORDERED` (결제 성공)

@@ -174,7 +174,7 @@
 
 ---
 
-### Response ` 400 Bad Request`
+### Response `400 Bad Request`
 ```json
 {
     "message": "수량은 1 이상이어야 합니다.",
