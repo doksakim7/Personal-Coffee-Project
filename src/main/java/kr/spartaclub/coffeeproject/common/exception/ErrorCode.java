@@ -21,8 +21,8 @@ public enum ErrorCode {
 
     // 회원
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
-    USER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "중복된 이메일입니다."),
-    USER_INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 틀렸습니다."),
+    USER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    USER_INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
 
     // 메뉴
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),

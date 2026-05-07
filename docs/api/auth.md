@@ -47,7 +47,7 @@
         "userId": 1,
         "email": "test@test.com"
     },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -58,7 +58,7 @@
 {
     "message": "이미 존재하는 이메일입니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+   "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -98,12 +98,12 @@
 {
     "message": "로그인에 성공했습니다.",
     "data": {
-        "accessToken": "jwt-token",
+        "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJ0ZXN0N....",
         "tokenType": "Bearer",
         "userId": 1,
         "email": "test@test.com"
-    },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    }, 
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -114,6 +114,6 @@
 {
     "message": "이메일 또는 비밀번호가 올바르지 않습니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```

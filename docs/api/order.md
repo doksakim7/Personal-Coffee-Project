@@ -56,7 +56,7 @@ Idempotency-Key: {unique-key}
         "totalPrice": 8000,
         "status": "PENDING"
     },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -67,7 +67,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "Idempotency-Key가 필요합니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -108,7 +108,7 @@ Idempotency-Key: {unique-key}
         "orderId": 1,
         "status": "ORDERED"
     },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+   "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -119,7 +119,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "포인트가 부족합니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 ※ 포인트가 부족한 경우
@@ -131,7 +131,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "이미 처리된 주문입니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 ※ `ORDERED` 상태인 경우 → 이미 결제 완료된 주문
@@ -143,7 +143,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "이미 취소된 주문입니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -155,8 +155,8 @@ Idempotency-Key: {unique-key}
 ```json
 {
     "message": "요청이 많습니다. 잠시 후 다시 시도해주세요.",
-    "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "data": null, 
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 ※ Redis 분산락 획득 실패 시 반환
@@ -202,7 +202,7 @@ Idempotency-Key: {unique-key}
         "totalElements": 50,
         "totalPages": 5
     },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -244,8 +244,8 @@ Idempotency-Key: {unique-key}
         "totalPrice": 8000,
         "status": "ORDERED",
         "createdAt": "2026-05-11T00:00:00+09:00"
-    },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    }, 
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -257,7 +257,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "존재하지 않는 주문입니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -287,8 +287,8 @@ Idempotency-Key: {unique-key}
     "data": {
         "orderId": 1,
         "status": "CANCELED_BY_USER"
-    },
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    }, 
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 
@@ -299,7 +299,7 @@ Idempotency-Key: {unique-key}
 {
     "message": "이미 취소된 주문입니다.",
     "data": null,
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "timestamp": "2026-05-11T09:00.000000"
 }
 ```
 ※ `CANCELED_BY_USER`, `CANCELED_BY_SYSTEM` 상태인 경우 → 이미 취소된 주문
