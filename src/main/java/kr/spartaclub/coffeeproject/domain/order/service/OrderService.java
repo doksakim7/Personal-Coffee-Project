@@ -12,7 +12,7 @@ import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCancelResponse
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCreateResponse;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderDetailResponse;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderPayResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderSummaryResponse;
+import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderListResponse;
 import kr.spartaclub.coffeeproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeproject.domain.order.entity.OrderItem;
 import kr.spartaclub.coffeeproject.domain.order.repository.OrderItemRepository;
@@ -147,16 +147,27 @@ public class OrderService {
 
     // 현재 로그인한 사용자의 주문 목록을 최신순으로 조회한다.
     @Transactional(readOnly = true)
-    public Page<OrderSummaryResponse> getOrders(AuthUser authUser, Pageable pageable) {
+    public OrderListResponse getOrders(AuthUser authUser, Pageable pageable) {
         User user = getUser(authUser);
 
-        return orderRepository.findAllByUserOrderByCreatedAtDesc(user, pageable)
-                .map(order -> new OrderSummaryResponse(
+        Page<Order> pageResult = orderRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
+
+        List<OrderListResponse.OrderSummaryItem> content = pageResult.getContent().stream()
+                .map(order -> new OrderListResponse.OrderSummaryItem(
                         order.getId(),
                         order.getTotalPrice(),
                         order.getStatus().name(),
                         order.getCreatedAt()
-                ));
+                ))
+                .toList();
+
+        return new OrderListResponse(
+                content,
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.getTotalPages()
+        );
     }
 
     // 현재 로그인한 사용자의 주문 상세 정보를 조회한다.

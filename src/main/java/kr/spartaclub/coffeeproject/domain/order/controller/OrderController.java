@@ -6,7 +6,7 @@ import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCancelResponse
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCreateResponse;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderDetailResponse;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderPayResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderSummaryResponse;
+import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderListResponse;
 import kr.spartaclub.coffeeproject.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,11 +47,11 @@ public class OrderController {
 
     // 주문 목록 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<OrderSummaryResponse>>> getOrders(
+    public ResponseEntity<ApiResponse<OrderListResponse>> getOrders(
             @AuthenticationPrincipal AuthUser authUser,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<OrderSummaryResponse> response = orderService.getOrders(authUser, pageable);
+        OrderListResponse response = orderService.getOrders(authUser, pageable);
         return ResponseEntity.ok(ApiResponse.success("주문 목록 조회 성공", response));
     }
 

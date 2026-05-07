@@ -29,13 +29,13 @@ public enum ErrorCode {
     MENU_NOT_ACTIVE(HttpStatus.CONFLICT, "현재 판매 중인 메뉴가 아닙니다."),
 
     // 장바구니
-    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다."),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 장바구니입니다."),
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 장바구니 상품입니다."),
     CART_INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다."),
 
     // 주문
     CART_EMPTY(HttpStatus.BAD_REQUEST, "장바구니가 비어있습니다."),
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
     ORDER_ALREADY_ORDERED(HttpStatus.CONFLICT, "이미 처리된 주문입니다."),
     ORDER_ALREADY_CANCELED(HttpStatus.CONFLICT, "이미 취소된 주문입니다."),
     IDEMPOTENCY_KEY_MISSING(HttpStatus.BAD_REQUEST, "Idempotency-Key가 필요합니다."),
