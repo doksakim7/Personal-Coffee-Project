@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PointHistoryListResponse {
 
-    private List<PointHistoryItem> content;
+    private List<PointHistorySummary> content;
     private int page;
     private int size;
     private long totalElements;
@@ -18,7 +18,7 @@ public class PointHistoryListResponse {
 
     @Getter
     @AllArgsConstructor
-    public static class PointHistoryItem {
+    public static class PointHistorySummary {
         private Long historyId;
         private String type;
         private Long amount;

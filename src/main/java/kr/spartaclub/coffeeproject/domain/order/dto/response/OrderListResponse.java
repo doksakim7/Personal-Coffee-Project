@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderListResponse {
 
-    private List<OrderSummaryItem> content;
+    private List<OrderSummary> content;
     private int page;
     private int size;
     private long totalElements;
@@ -18,7 +18,7 @@ public class OrderListResponse {
 
     @Getter
     @AllArgsConstructor
-    public static class OrderSummaryItem {
+    public static class OrderSummary {
         private Long orderId;
         private Long totalPrice;
         private String status;

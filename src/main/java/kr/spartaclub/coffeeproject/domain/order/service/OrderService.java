@@ -152,8 +152,8 @@ public class OrderService {
 
         Page<Order> pageResult = orderRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
 
-        List<OrderListResponse.OrderSummaryItem> content = pageResult.getContent().stream()
-                .map(order -> new OrderListResponse.OrderSummaryItem(
+        List<OrderListResponse.OrderSummary> content = pageResult.getContent().stream()
+                .map(order -> new OrderListResponse.OrderSummary(
                         order.getId(),
                         order.getTotalPrice(),
                         order.getStatus().name(),

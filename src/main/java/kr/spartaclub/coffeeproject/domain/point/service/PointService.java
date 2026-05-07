@@ -97,8 +97,8 @@ public class PointService {
 
         Page<PointHistory> pageResult = pointHistoryRepository.findAllByUserOrderByCreatedAtDesc(user, pageable);
 
-        List<PointHistoryListResponse.PointHistoryItem> content = pageResult.getContent().stream()
-                .map(history -> new PointHistoryListResponse.PointHistoryItem(
+        List<PointHistoryListResponse.PointHistorySummary> content = pageResult.getContent().stream()
+                .map(history -> new PointHistoryListResponse.PointHistorySummary(
                         history.getId(),
                         history.getType().name(),
                         history.getAmount(),
