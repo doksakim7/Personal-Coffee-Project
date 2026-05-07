@@ -6,6 +6,9 @@ spring:
   application:
     name: coffee-project
 
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:mysql://localhost:3306/coffee_db
     username: your-username
