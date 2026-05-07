@@ -83,12 +83,13 @@
 | **인증** | 불필요 |
 | **설명** | 서버 상태를 체크한다. |
 
+※ /actuator/health 응답은 Spring Boot Actuator 기본 포맷을 따른다.
+
 ---
 
 ### Response `200 OK`
 ```json
 {
-    "status": "UP", 
-    "timestamp": "2026-05-11T00:00:00+09:00"
+    "status": "UP"
 }
 ```

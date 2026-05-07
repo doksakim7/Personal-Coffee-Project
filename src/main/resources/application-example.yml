@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none  # 개발 시 update 사용 가능
+      ddl-auto: none  # 예시 설정, 로컬 개발 환경에서는 update 또는 create 사용 가능
     properties:
       hibernate:
         show_sql: true
@@ -28,3 +28,13 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+# 서버 상태 모니터링 (/actuator/health)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
