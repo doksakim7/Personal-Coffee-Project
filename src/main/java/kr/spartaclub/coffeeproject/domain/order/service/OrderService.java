@@ -1,5 +1,6 @@
 package kr.spartaclub.coffeeproject.domain.order.service;
 
+import kr.spartaclub.coffeeproject.common.enums.OrderStatus;
 import kr.spartaclub.coffeeproject.common.exception.CustomException;
 import kr.spartaclub.coffeeproject.common.exception.ErrorCode;
 import kr.spartaclub.coffeeproject.common.security.AuthUser;
@@ -48,6 +49,12 @@ public class OrderService {
         validateIdempotencyKey(idempotencyKey);
 
         User user = getUser(authUser);
+
+        // 동일 사용자 기준 PENDING 주문은 1개만 허용
+        if (orderRepository.existsByUserAndStatus(user, OrderStatus.PENDING)) {
+            throw new CustomException(ErrorCode.ORDER_PENDING_ALREADY_EXISTS);
+        }
+
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_EMPTY));
 

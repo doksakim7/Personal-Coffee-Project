@@ -38,6 +38,7 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
     ORDER_ALREADY_ORDERED(HttpStatus.CONFLICT, "이미 처리된 주문입니다."),
     ORDER_ALREADY_CANCELED(HttpStatus.CONFLICT, "이미 취소된 주문입니다."),
+    ORDER_PENDING_ALREADY_EXISTS(HttpStatus.CONFLICT, "진행 중인 주문이 이미 존재합니다."),
     IDEMPOTENCY_KEY_MISSING(HttpStatus.BAD_REQUEST, "Idempotency-Key가 필요합니다."),
     IDEMPOTENCY_KEY_CONFLICT(HttpStatus.CONFLICT, "이미 처리된 요청입니다."),
 

@@ -73,6 +73,17 @@ Idempotency-Key: {unique-key}
 
 ---
 
+### Response `409 Conflict`
+```json
+{
+    "message": "진행 중인 주문이 이미 존재합니다.",
+    "data": null,
+    "timestamp": "2026-05-11T09:00:00.000000"
+}
+```
+
+---
+
 ## 2. 주문 결제
 
 | 항목     | 내용                      |
