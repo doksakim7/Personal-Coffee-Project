@@ -10,6 +10,7 @@ import kr.spartaclub.coffeeproject.domain.cart.entity.Cart;
 import kr.spartaclub.coffeeproject.domain.cart.entity.CartItem;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartItemRepository;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartRepository;
+import kr.spartaclub.coffeeproject.domain.menu.repository.PopularMenuRedisRepository;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.*;
 import kr.spartaclub.coffeeproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeproject.domain.order.entity.OrderItem;
@@ -42,6 +43,7 @@ public class OrderService {
     private final PointHistoryRepository pointHistoryRepository;
     private final OrderPaymentService orderPaymentService;
     private final DistributedLockManager distributedLockManager;
+    private final PopularMenuRedisRepository popularMenuRedisRepository;
 
     // 장바구니 기준으로 주문을 생성하고 PENDING 상태로 저장한다.
     @Transactional
@@ -155,7 +157,7 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_ALREADY_CANCELED);
         }
 
-        // ORDERED 상태 취소면 포인트 복구 + REFUND 이력 저장
+        // ORDERED 상태 취소면 포인트 복구 + REFUND 이력 저장 + 인기 메뉴 점수 차감
         if (order.isOrdered()) {
             user.addPoint(order.getTotalPrice());
 
@@ -168,6 +170,15 @@ public class OrderService {
                             PointType.REFUND
                     )
             );
+
+            List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+
+            for (OrderItem orderItem : orderItems) {
+                popularMenuRedisRepository.decrementScore(
+                        orderItem.getMenu().getId(),
+                        orderItem.getQuantity()
+                );
+            }
         }
 
         // PENDING, ORDERED 모두 사용자 취소 가능

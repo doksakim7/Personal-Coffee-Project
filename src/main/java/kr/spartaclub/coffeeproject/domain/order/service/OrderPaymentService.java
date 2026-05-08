@@ -7,6 +7,7 @@ import kr.spartaclub.coffeeproject.common.exception.ErrorCode;
 import kr.spartaclub.coffeeproject.domain.cart.entity.CartItem;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartItemRepository;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartRepository;
+import kr.spartaclub.coffeeproject.domain.menu.repository.PopularMenuRedisRepository;
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderPayResponse;
 import kr.spartaclub.coffeeproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeproject.domain.order.entity.OrderItem;
@@ -34,6 +35,7 @@ public class OrderPaymentService {
     private final CartItemRepository cartItemRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final UserRepository userRepository;
+    private final PopularMenuRedisRepository popularMenuRedisRepository;
 
     // 주문 상태와 포인트를 검증한 뒤 결제를 처리하고, 성공 시 ORDERED 상태로 변경한다.
     @Transactional(noRollbackFor = CustomException.class)
@@ -84,6 +86,14 @@ public class OrderPaymentService {
 
         // 주문 상태 완료
         order.complete();
+
+        // 인기 메뉴 집계 반영
+        for (OrderItem orderItem : orderItems) {
+            popularMenuRedisRepository.incrementScore(
+                    orderItem.getMenu().getId(),
+                    orderItem.getQuantity()
+            );
+        }
 
         // 결제 성공 시 장바구니 비우기
         cartRepository.findByUser(user).ifPresent(cart -> {

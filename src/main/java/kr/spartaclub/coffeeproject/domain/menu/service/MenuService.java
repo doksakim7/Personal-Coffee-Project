@@ -9,6 +9,7 @@ import kr.spartaclub.coffeeproject.domain.menu.dto.response.MenuListResponse;
 import kr.spartaclub.coffeeproject.domain.menu.dto.response.PopularMenuResponse;
 import kr.spartaclub.coffeeproject.domain.menu.entity.Menu;
 import kr.spartaclub.coffeeproject.domain.menu.repository.MenuRepository;
+import kr.spartaclub.coffeeproject.domain.menu.repository.PopularMenuRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,15 +17,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class MenuService {
 
+    private static final int POPULAR_MENU_LIMIT = 10;
+
     private final MenuRepository menuRepository;
+    private final PopularMenuRedisRepository popularMenuRedisRepository;
 
     // AVAILABLE, SOLD_OUT 상태의 메뉴만 목록 조회한다.
     @Transactional(readOnly = true)
@@ -78,11 +85,40 @@ public class MenuService {
         );
     }
 
-    // 인기 메뉴를 조회한다.
-    // 현재 Redis 연동 전이면 빈 리스트를 반환하고, 추후 ZSet 연동으로 확장한다.
+    // Redis ZSet 기준 상위 10개의 인기 메뉴를 조회한다.
     @Transactional(readOnly = true)
     public List<PopularMenuResponse> getPopularMenus() {
-        return Collections.emptyList();
+        Map<Long, Long> topMenus = popularMenuRedisRepository.getTopMenus(POPULAR_MENU_LIMIT);
+
+        if (topMenus.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> menuIds = new ArrayList<>(topMenus.keySet());
+
+        Map<Long, Menu> menuMap = menuRepository.findAllById(menuIds).stream()
+                .collect(Collectors.toMap(Menu::getId, menu -> menu));
+
+        List<PopularMenuResponse> result = new ArrayList<>();
+
+        // ZSet score 순서를 유지하기 위해 menuIds 순서대로 응답 생성
+        for (Long menuId : menuIds) {
+            Menu menu = menuMap.get(menuId);
+
+            // 삭제되었거나 조회되지 않는 메뉴는 제외
+            if (menu == null) {
+                continue;
+            }
+
+            result.add(new PopularMenuResponse(
+                    menu.getId(),
+                    menu.getName(),
+                    menu.getType().name(),
+                    topMenus.get(menuId)
+            ));
+        }
+
+        return result;
     }
 
 }
