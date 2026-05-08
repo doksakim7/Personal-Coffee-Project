@@ -3,17 +3,14 @@ package kr.spartaclub.coffeeproject.domain.order.service;
 import kr.spartaclub.coffeeproject.common.enums.OrderStatus;
 import kr.spartaclub.coffeeproject.common.exception.CustomException;
 import kr.spartaclub.coffeeproject.common.exception.ErrorCode;
+import kr.spartaclub.coffeeproject.common.lock.DistributedLockManager;
 import kr.spartaclub.coffeeproject.common.security.AuthUser;
 import kr.spartaclub.coffeeproject.common.enums.PointType;
 import kr.spartaclub.coffeeproject.domain.cart.entity.Cart;
 import kr.spartaclub.coffeeproject.domain.cart.entity.CartItem;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartItemRepository;
 import kr.spartaclub.coffeeproject.domain.cart.repository.CartRepository;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCancelResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderCreateResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderDetailResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderPayResponse;
-import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderListResponse;
+import kr.spartaclub.coffeeproject.domain.order.dto.response.*;
 import kr.spartaclub.coffeeproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeproject.domain.order.entity.OrderItem;
 import kr.spartaclub.coffeeproject.domain.order.repository.OrderItemRepository;
@@ -30,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -42,6 +40,8 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final PointHistoryRepository pointHistoryRepository;
+    private final OrderPaymentService orderPaymentService;
+    private final DistributedLockManager distributedLockManager;
 
     // 장바구니 기준으로 주문을 생성하고 PENDING 상태로 저장한다.
     @Transactional
@@ -93,63 +93,6 @@ public class OrderService {
                 savedOrder.getTotalPrice(),
                 savedOrder.getStatus().name()
         );
-    }
-
-    // PENDING 상태의 주문을 결제하고 ORDERED 상태로 변경한다.
-    @Transactional(noRollbackFor = CustomException.class)
-    public OrderPayResponse payOrder(AuthUser authUser, Long orderId) {
-        User user = getUser(authUser);
-        Order order = getOwnedOrder(user, orderId);
-
-        if (order.isOrdered()) {
-            // ORDERED 상태 재요청은 동일 결과 반환
-            return new OrderPayResponse(order.getId(), order.getStatus().name());
-        }
-
-        if (order.isCanceled()) {
-            throw new CustomException(ErrorCode.ORDER_ALREADY_CANCELED);
-        }
-
-        List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
-
-        // 결제 시점에도 메뉴 상태를 재검증
-        for (OrderItem orderItem : orderItems) {
-            if (!orderItem.getMenu().isOrderable()) {
-                order.cancelBySystem();
-                throw new CustomException(ErrorCode.MENU_NOT_ACTIVE);
-            }
-        }
-
-        // 포인트 부족 시 주문은 시스템 취소 상태로 변경
-        if (user.getPoint() < order.getTotalPrice()) {
-            order.cancelBySystem();
-            throw new CustomException(ErrorCode.INSUFFICIENT_POINT);
-        }
-
-        // 포인트 차감
-        user.subtractPoint(order.getTotalPrice());
-
-        // 포인트 사용 이력 저장 (부호 포함 저장 정책)
-        pointHistoryRepository.save(
-                new PointHistory(
-                        user,
-                        order,
-                        -order.getTotalPrice(),
-                        user.getPoint(),
-                        PointType.USE
-                )
-        );
-
-        // 주문 상태 완료
-        order.complete();
-
-        // 결제 성공 시 장바구니 비우기
-        cartRepository.findByUser(user).ifPresent(cart -> {
-            List<CartItem> cartItems = cartItemRepository.findAllByCart(cart);
-            cartItemRepository.deleteAll(cartItems);
-        });
-
-        return new OrderPayResponse(order.getId(), order.getStatus().name());
     }
 
     // 현재 로그인한 사용자의 주문 목록을 최신순으로 조회한다.
@@ -231,6 +174,20 @@ public class OrderService {
         order.cancelByUser();
 
         return new OrderCancelResponse(order.getId(), order.getStatus().name());
+    }
+
+    // 동일 사용자에 대한 결제 요청을 Redis 분산락으로 직렬화한 뒤 실제 결제 로직을 수행한다.
+    public OrderPayResponse payOrder(AuthUser authUser, Long orderId) {
+        Long userId = authUser.getId();
+        String lockKey = "lock:user:" + userId;
+
+        return distributedLockManager.executeWithLock(
+                lockKey,
+                3,
+                5,
+                TimeUnit.SECONDS,
+                () -> orderPaymentService.payOrderInternal(userId, orderId)
+        );
     }
 
     private void validateIdempotencyKey(String idempotencyKey) {
