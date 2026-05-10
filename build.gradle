@@ -46,9 +46,6 @@ dependencies {
     // ✅ JSON (LocalDateTime)
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    // ✅ Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
-
     // ✅ QueryDSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
