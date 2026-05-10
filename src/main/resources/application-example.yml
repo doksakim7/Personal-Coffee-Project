@@ -34,6 +34,22 @@ spring:
       pageable:
         max-page-size: 100
 
+  # Kafka 설정
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: coffee-order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "kr.spartaclub.coffeeproject"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "kr.spartaclub.coffeeproject.domain.order.event.OrderCompletedEvent"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 # 서버 상태 모니터링 (/actuator/health)
 management:
   endpoints:
