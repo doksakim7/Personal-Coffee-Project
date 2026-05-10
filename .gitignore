@@ -61,5 +61,5 @@ logs/
 # =========================
 *.yml
 *.yaml
-!application-example.yml
 !src/main/resources/application-example.yml
+!docker-compose.yml
