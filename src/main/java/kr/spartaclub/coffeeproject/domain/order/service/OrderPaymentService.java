@@ -11,8 +11,7 @@ import kr.spartaclub.coffeeproject.domain.menu.repository.PopularMenuRedisReposi
 import kr.spartaclub.coffeeproject.domain.order.dto.response.OrderPayResponse;
 import kr.spartaclub.coffeeproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeproject.domain.order.entity.OrderItem;
-import kr.spartaclub.coffeeproject.domain.order.event.OrderCompletedEvent;
-import kr.spartaclub.coffeeproject.domain.order.event.OrderEventProducer;
+import kr.spartaclub.coffeeproject.domain.order.event.OrderCompletedApplicationEvent;
 import kr.spartaclub.coffeeproject.domain.order.repository.OrderItemRepository;
 import kr.spartaclub.coffeeproject.domain.order.repository.OrderRepository;
 import kr.spartaclub.coffeeproject.domain.point.entity.PointHistory;
@@ -21,6 +20,7 @@ import kr.spartaclub.coffeeproject.domain.user.entity.User;
 import kr.spartaclub.coffeeproject.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +39,7 @@ public class OrderPaymentService {
     private final PointHistoryRepository pointHistoryRepository;
     private final UserRepository userRepository;
     private final PopularMenuRedisRepository popularMenuRedisRepository;
-    private final OrderEventProducer orderEventProducer;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     // 주문 상태와 포인트를 검증한 뒤 결제를 처리하고, 성공 시 ORDERED 상태로 변경한다.
     @Transactional(noRollbackFor = CustomException.class)
@@ -91,14 +91,13 @@ public class OrderPaymentService {
         // 주문 상태 완료
         order.complete();
 
-        // 주문 완료 이벤트를 Kafka로 발행한다.
-        orderEventProducer.sendOrderCompleted(
-                new OrderCompletedEvent(
+        // 트랜잭션 커밋 이후 Kafka로 발행할 내부 이벤트를 발행한다.
+        applicationEventPublisher.publishEvent(
+                new OrderCompletedApplicationEvent(
                         order.getId(),
                         user.getId(),
                         order.getTotalPrice(),
-                        order.getStatus().name(),
-                        LocalDateTime.now()
+                        order.getStatus().name()
                 )
         );
 
