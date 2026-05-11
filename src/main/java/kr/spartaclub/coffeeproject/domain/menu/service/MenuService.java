@@ -33,23 +33,12 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final PopularMenuRedisRepository popularMenuRedisRepository;
 
-    // AVAILABLE, SOLD_OUT 상태의 메뉴만 목록 조회한다.
+    // AVAILABLE, SOLD_OUT 상태의 메뉴를 조회하며, type 조건은 QueryDSL로 동적으로 반영한다.
     @Transactional(readOnly = true)
     public MenuListResponse getMenus(MenuType type, Pageable pageable) {
-        Page<Menu> menuPage;
 
-        if (type == null) {
-            menuPage = menuRepository.findAllByStatusInOrderByIdAsc(
-                    List.of(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT),
-                    pageable
-            );
-        } else {
-            menuPage = menuRepository.findAllByTypeAndStatusInOrderByIdAsc(
-                    type,
-                    List.of(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT),
-                    pageable
-            );
-        }
+        // 메뉴 타입 조건을 동적으로 반영하기 위해 QueryDSL 기반 조회를 사용한다.
+        Page<Menu> menuPage = menuRepository.searchMenus(type, pageable);
 
         List<MenuListResponse.MenuSummary> content = menuPage.getContent().stream()
                 .map(menu -> new MenuListResponse.MenuSummary(
