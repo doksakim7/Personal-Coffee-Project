@@ -73,7 +73,7 @@
 - 메뉴 상세 조회
 
 ### 📊 인기 메뉴
-- 인기 메뉴 집계 (Redis ZSet 기반)
+- 인기 메뉴 집계 (최근 7일 Redis ZSet 기반)
 - 인기 메뉴 조회
 
 ### 🛒 장바구니
@@ -133,7 +133,7 @@
 4. 포인트 검증 및 차감 (`POINT_HISTORY`에 `USE` 이력 기록)
 5. 주문 상태 변경 (`PENDING` → `ORDERED`)
 6. 장바구니 초기화 
-7. Redis ZSet 증가 (인기 메뉴 집계, `ORDERED` 기준)
+7. 결제 완료 시각(`orderedAt`) 기준으로 날짜별 Redis ZSet에 인기 메뉴 집계를 반영
 8. 트랜잭션 커밋 이후 이벤트를 발행하고, Kafka를 통해 비동기로 처리한다. 
 9. 락 해제
 
@@ -143,8 +143,8 @@
 
 #### ✅ Redis
 - Redis 분산락을 활용하여 동시성 문제를 해결
-- ZSet → 인기 메뉴 실시간 집계
-- ZSet key는 "popular:menus"로 관리
+- ZSet → 최근 7일 인기 메뉴 집계
+- 날짜별 ZSet key(`popular:menus:{yyyy-MM-dd}`)로 관리
 
 #### ✅ Kafka
 - 주문 처리와 데이터 수집을 분리하기 위해 사용
@@ -164,8 +164,9 @@
 - Redisson 기반 분산락을 적용하고, `tryLock`의 대기 시간과 TTL을 설정하여 무한 대기와 데드락을 방지하였다.
 
 ### Redis ZSet
-- 인기 메뉴 집계를 위해 Redis ZSet을 활용하였다.
-- 결제 성공 시 score를 증가시키고, `ORDERED` 상태 주문 취소 시 score를 감소시켜 정책과 실제 집계 결과를 일치시켰다.
+- 최근 7일 인기 메뉴 집계를 위해 날짜별 Redis ZSet을 활용하였다.
+- 결제 완료 시각(`orderedAt`) 기준으로 `popular:menus:{yyyy-MM-dd}` key에 score를 반영하였다.
+- `ORDERED` 상태 주문 취소 시에는 주문이 반영된 날짜 key에서 score를 감소시켜 정책과 실제 집계 결과를 일치시켰다.
 
 ### Kafka
 - 주문 완료 이벤트를 Kafka로 발행하여 비동기 처리 구조를 구성하였다.
@@ -319,8 +320,9 @@ Coffee-Project
 - Consumer 로그를 통해 이벤트 수신 및 역직렬화가 정상 동작함을 확인하였다.
 
 ### Redis 검증
-- Redis CLI 및 RedisInsight를 통해 `popular:menus` ZSet score 반영 결과를 확인하였다.
+- Redis CLI 및 RedisInsight를 통해 `popular:menus:{yyyy-MM-dd}` 형태의 날짜별 ZSet score 반영 결과를 확인하였다.
 - 결제 성공 시 score 증가, 주문 취소 시 score 감소를 검증하였다.
+- 최근 7일 집계 기준 상위 3개 인기 메뉴가 정상적으로 조회되는 것을 확인하였다.
 
 ### k6 검증
 - 10 VUs / 5초 조건에서 동일 사용자 기준 결제 API에 동시 요청을 보내는 테스트를 수행하였다.
