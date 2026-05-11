@@ -1,6 +1,5 @@
 package kr.spartaclub.coffeeproject.domain.menu.service;
 
-import kr.spartaclub.coffeeproject.common.enums.MenuStatus;
 import kr.spartaclub.coffeeproject.common.enums.MenuType;
 import kr.spartaclub.coffeeproject.common.exception.CustomException;
 import kr.spartaclub.coffeeproject.common.exception.ErrorCode;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
-    private static final int POPULAR_MENU_LIMIT = 10;
+    private static final int POPULAR_MENU_LIMIT = 3;
 
     private final MenuRepository menuRepository;
     private final PopularMenuRedisRepository popularMenuRedisRepository;
@@ -74,10 +72,10 @@ public class MenuService {
         );
     }
 
-    // Redis ZSet 기준 상위 10개의 인기 메뉴를 조회한다.
+    // 최근 7일간 Redis ZSet 집계를 기준으로 상위 3개의 인기 메뉴를 조회한다.
     @Transactional(readOnly = true)
     public List<PopularMenuResponse> getPopularMenus() {
-        Map<Long, Long> topMenus = popularMenuRedisRepository.getTopMenus(POPULAR_MENU_LIMIT);
+        Map<Long, Long> topMenus = popularMenuRedisRepository.getTopMenusLast7Days(POPULAR_MENU_LIMIT);
 
         if (topMenus.isEmpty()) {
             return List.of();

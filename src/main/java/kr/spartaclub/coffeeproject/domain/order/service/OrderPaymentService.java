@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -101,9 +101,13 @@ public class OrderPaymentService {
                 )
         );
 
+
+        LocalDate orderedDate = order.getCreatedAt().toLocalDate();
+
         // 인기 메뉴 집계 반영
         for (OrderItem orderItem : orderItems) {
             popularMenuRedisRepository.incrementScore(
+                    orderedDate,
                     orderItem.getMenu().getId(),
                     orderItem.getQuantity()
             );
