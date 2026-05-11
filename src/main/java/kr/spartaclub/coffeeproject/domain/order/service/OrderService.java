@@ -174,7 +174,9 @@ public class OrderService {
 
             List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
 
-            LocalDate orderedDate = order.getCreatedAt().toLocalDate();
+            LocalDate orderedDate = order.getOrderedAt() != null
+                    ? order.getOrderedAt().toLocalDate()
+                    : order.getCreatedAt().toLocalDate();
 
             for (OrderItem orderItem : orderItems) {
                 popularMenuRedisRepository.decrementScore(

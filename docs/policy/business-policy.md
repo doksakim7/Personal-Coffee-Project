@@ -103,8 +103,11 @@
 ## 📊 인기 메뉴 집계 정책
 - 주문이 `ORDERED` 상태로 확정된 경우에만 집계에 반영한다.
 - 취소(`CANCELED_BY_USER`, `CANCELED_BY_SYSTEM`)된 주문은 집계에서 제외한다.
-- ZSet key는 "popular:menus"로 관리하며, member는 menuId, score는 주문 횟수로 증가시키는 방식으로 집계한다.
-- 인기 메뉴는 Redis ZSet 기반으로 처리하며, 결제 성공 시 즉시 반영한다.
+- 인기 메뉴 집계는 날짜별 Redis ZSet으로 관리한다.
+- ZSet key는 `popular:menus:{yyyy-MM-dd}` 형식으로 관리하며, member는 `menuId`, score는 해당 날짜의 주문 횟수로 증가시키는 방식으로 집계한다.
+- 인기 메뉴 조회 시 최근 7일간의 ZSet 데이터를 합산하여 상위 3개 메뉴를 반환한다.
+- 주문 취소 시에는 주문이 반영된 날짜 기준 ZSet에서 score를 감소시켜 집계 정확성을 유지한다.
+- 인기 메뉴 집계는 주문 생성 시각이 아니라 결제 완료 시각(`orderedAt`) 기준으로 반영한다.
 
 ---
 

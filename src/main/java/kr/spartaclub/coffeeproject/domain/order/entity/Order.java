@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @SQLRestriction("deleted_at IS NULL")
@@ -34,6 +36,10 @@ public class Order extends SoftDeleteEntity {
     @Column(nullable = false, length = 30)
     private OrderStatus status;
 
+    // 결제 완료 시각
+    @Column(name = "ordered_at")
+    private LocalDateTime orderedAt;
+
     // ==========================
     // 생성자
     // ==========================
@@ -51,6 +57,7 @@ public class Order extends SoftDeleteEntity {
     // 결제 완료
     public void complete() {
         this.status = OrderStatus.ORDERED;
+        this.orderedAt = LocalDateTime.now();
     }
 
     // 결제 실패로 인한 취소

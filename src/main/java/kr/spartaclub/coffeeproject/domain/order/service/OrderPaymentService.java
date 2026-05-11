@@ -102,7 +102,9 @@ public class OrderPaymentService {
         );
 
 
-        LocalDate orderedDate = order.getCreatedAt().toLocalDate();
+        LocalDate orderedDate = order.getOrderedAt() != null
+                ? order.getOrderedAt().toLocalDate()
+                : order.getCreatedAt().toLocalDate();
 
         // 인기 메뉴 집계 반영
         for (OrderItem orderItem : orderItems) {
